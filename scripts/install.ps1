@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $source = Join-Path $repoRoot "skills\ayo"
-$claudeCommandSource = Join-Path $repoRoot ".claude\commands\ayo.md"
+$claudeCommandsSourceRoot = Join-Path $repoRoot ".claude\commands"
 
 if (-not (Test-Path $source)) {
     throw "Cannot find skill source at $source"
@@ -23,11 +23,13 @@ foreach ($entry in $targets) {
     Write-Host "Installed ayo skill for $($entry.Name) to $target"
 }
 
-if (Test-Path $claudeCommandSource) {
-    $claudeCommandsRoot = Join-Path $env:USERPROFILE ".claude\commands"
+$claudeCommandsRoot = Join-Path $env:USERPROFILE ".claude\commands"
+if (Test-Path $claudeCommandsSourceRoot) {
     New-Item -ItemType Directory -Force -Path $claudeCommandsRoot | Out-Null
-    Copy-Item -Force -Path $claudeCommandSource -Destination (Join-Path $claudeCommandsRoot "ayo.md")
-    Write-Host "Installed Claude Code /ayo command to $claudeCommandsRoot"
+    foreach ($commandSource in Get-ChildItem -Path $claudeCommandsSourceRoot -Filter "*.md" -File) {
+        Copy-Item -Force -Path $commandSource.FullName -Destination (Join-Path $claudeCommandsRoot $commandSource.Name)
+        Write-Host "Installed Claude Code /$([System.IO.Path]::GetFileNameWithoutExtension($commandSource.Name)) command to $claudeCommandsRoot"
+    }
 }
 
 Write-Host ""
@@ -35,6 +37,9 @@ Write-Host "Next steps:"
 Write-Host "1. Fully restart Codex or Claude Code, or open a brand-new chat after installation."
 Write-Host "2. Open the project you want to summarize."
 Write-Host "3. Type exactly: ayo"
-Write-Host "   In Claude Code, you can also type: /ayo"
+Write-Host "4. To resume from the latest handoff later, type: oya"
+Write-Host "5. To create a project checkpoint, type: ayo bro"
+Write-Host "6. To restore the latest checkpoint, type: fuck"
+Write-Host "   In Claude Code, you can also type: /ayo, /oya, /ayo-bro, or /fuck"
 Write-Host ""
 Write-Host "Note: ordinary ChatGPT web/app chats do not load local skills from this folder."
