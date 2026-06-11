@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oya Resume"
+  short_description: "Resume from latest AYO handoff."
+  default_prompt: "oya"

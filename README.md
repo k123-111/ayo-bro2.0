@@ -1,4 +1,4 @@
-# ayo3.0.0
+﻿# ayo4.0.0
 
 `ayo` is a chat-triggered AI skill for saving handoffs, resuming work, creating checkpoints, and restoring safe project states.
 
@@ -37,14 +37,23 @@ AYO stores why it changed.
 ## Repository Layout
 
 ```text
-ayo3.0.0/
+ayo4.0.0/
   skills/ayo/              # Canonical skill package
+  skills/oya/              # Resume from latest handoff
+  skills/ayo-bro/          # Create latest checkpoint
+  skills/fuck/             # Restore latest checkpoint
   .claude/skills/ayo/      # Claude Code project-level copy
+  .claude/skills/oya/
+  .claude/skills/ayo-bro/
+  .claude/skills/fuck/
   .claude/commands/ayo.md  # Claude Code slash command fallback
   .claude/commands/oya.md  # Claude Code resume command fallback
   .claude/commands/ayo-bro.md
   .claude/commands/fuck.md
   .codex/skills/ayo/       # Codex project-level copy for compatible environments
+  .codex/skills/oya/
+  .codex/skills/ayo-bro/
+  .codex/skills/fuck/
   scripts/install.ps1      # Windows installer
   scripts/install.sh       # macOS/Linux installer
 ```
@@ -61,32 +70,46 @@ ayo-handoffs/
 
 ## Claude Code
 
-Clone this repository and open it with Claude Code. The project-level skill is available from `.claude/skills/ayo`.
+Clone this repository and open it with Claude Code. The project-level skills are available from `.claude/skills`.
 
 This repository also includes Claude Code slash commands in `.claude/commands`. In Claude Code, `/ayo`, `/oya`, `/ayo-bro`, and `/fuck` are useful fallbacks if plain text commands are not picked up by the skill matcher.
 
-For global use, copy `skills/ayo` to your Claude skills directory:
+For global use, copy all skills to your Claude skills directory:
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -R skills/ayo ~/.claude/skills/ayo
+cp -R skills/* ~/.claude/skills/
 mkdir -p ~/.claude/commands
 cp .claude/commands/*.md ~/.claude/commands/
 ```
 
 ## Codex
 
-Install globally so Codex can discover it:
+Install globally so Codex can discover all AYO skills:
 
 ```powershell
 .\scripts\install.ps1
+```
+
+On Windows, run `install.ps1` from PowerShell. If you are using Command Prompt (`cmd.exe`), run:
+
+```cmd
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
+```
+
+Do not double-click `install.ps1` or choose "Open" from the Windows security dialog. That may open the script as a text file instead of running it.
+
+If PowerShell blocks the script, run this first in the same PowerShell window:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 Or copy it manually:
 
 ```powershell
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\skills" | Out-Null
-Copy-Item -Recurse -Force .\skills\ayo "$env:USERPROFILE\.codex\skills\ayo"
+Copy-Item -Recurse -Force .\skills\* "$env:USERPROFILE\.codex\skills\"
 ```
 
 On macOS/Linux:
@@ -96,6 +119,17 @@ On macOS/Linux:
 ```
 
 ## Usage
+
+After installation and restart, Codex should discover these skill names:
+
+```text
+ayo
+oya
+ayo-bro
+fuck
+```
+
+If Codex only shows `/ayo` in the slash menu, you are using an older install or an old chat session. Run the installer again from the latest downloaded folder, then fully restart Codex or open a brand-new chat.
 
 To create a handoff, type:
 
@@ -180,7 +214,13 @@ Check installation on Windows:
 
 ```powershell
 Test-Path "$env:USERPROFILE\.codex\skills\ayo\SKILL.md"
+Test-Path "$env:USERPROFILE\.codex\skills\oya\SKILL.md"
+Test-Path "$env:USERPROFILE\.codex\skills\ayo-bro\SKILL.md"
+Test-Path "$env:USERPROFILE\.codex\skills\fuck\SKILL.md"
 Test-Path "$env:USERPROFILE\.claude\skills\ayo\SKILL.md"
+Test-Path "$env:USERPROFILE\.claude\skills\oya\SKILL.md"
+Test-Path "$env:USERPROFILE\.claude\skills\ayo-bro\SKILL.md"
+Test-Path "$env:USERPROFILE\.claude\skills\fuck\SKILL.md"
 Test-Path "$env:USERPROFILE\.claude\commands\ayo.md"
 Test-Path "$env:USERPROFILE\.claude\commands\oya.md"
 Test-Path "$env:USERPROFILE\.claude\commands\ayo-bro.md"
@@ -201,7 +241,13 @@ To remove the installed skill and Claude Code command on Windows:
 
 ```powershell
 Remove-Item -Recurse -Force "$env:USERPROFILE\.codex\skills\ayo" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.codex\skills\oya" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.codex\skills\ayo-bro" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.codex\skills\fuck" -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\skills\ayo" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\skills\oya" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\skills\ayo-bro" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\skills\fuck" -ErrorAction SilentlyContinue
 Remove-Item -Force "$env:USERPROFILE\.claude\commands\ayo.md" -ErrorAction SilentlyContinue
 Remove-Item -Force "$env:USERPROFILE\.claude\commands\oya.md" -ErrorAction SilentlyContinue
 Remove-Item -Force "$env:USERPROFILE\.claude\commands\ayo-bro.md" -ErrorAction SilentlyContinue
@@ -218,7 +264,13 @@ Check that it was removed:
 
 ```powershell
 Test-Path "$env:USERPROFILE\.codex\skills\ayo\SKILL.md"
+Test-Path "$env:USERPROFILE\.codex\skills\oya\SKILL.md"
+Test-Path "$env:USERPROFILE\.codex\skills\ayo-bro\SKILL.md"
+Test-Path "$env:USERPROFILE\.codex\skills\fuck\SKILL.md"
 Test-Path "$env:USERPROFILE\.claude\skills\ayo\SKILL.md"
+Test-Path "$env:USERPROFILE\.claude\skills\oya\SKILL.md"
+Test-Path "$env:USERPROFILE\.claude\skills\ayo-bro\SKILL.md"
+Test-Path "$env:USERPROFILE\.claude\skills\fuck\SKILL.md"
 Test-Path "$env:USERPROFILE\.claude\commands\ayo.md"
 Test-Path "$env:USERPROFILE\.claude\commands\oya.md"
 Test-Path "$env:USERPROFILE\.claude\commands\ayo-bro.md"

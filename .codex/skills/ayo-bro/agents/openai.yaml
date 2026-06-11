@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ayo Bro"
+  short_description: "Create latest AYO checkpoint."
+  default_prompt: "ayo bro"

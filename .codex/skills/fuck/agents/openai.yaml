@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ayo Restore"
+  short_description: "Restore latest AYO checkpoint."
+  default_prompt: "fuck"

@@ -1,11 +1,11 @@
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$source = Join-Path $repoRoot "skills\ayo"
+$skillsSourceRoot = Join-Path $repoRoot "skills"
 $claudeCommandsSourceRoot = Join-Path $repoRoot ".claude\commands"
 
-if (-not (Test-Path $source)) {
-    throw "Cannot find skill source at $source"
+if (-not (Test-Path $skillsSourceRoot)) {
+    throw "Cannot find skills source at $skillsSourceRoot"
 }
 
 $targets = @(
@@ -14,13 +14,15 @@ $targets = @(
 )
 
 foreach ($entry in $targets) {
-    $target = Join-Path $entry.Root "ayo"
     New-Item -ItemType Directory -Force -Path $entry.Root | Out-Null
-    if (Test-Path $target) {
-        Remove-Item -Recurse -Force -Path $target
+    foreach ($skillSource in Get-ChildItem -Path $skillsSourceRoot -Directory) {
+        $target = Join-Path $entry.Root $skillSource.Name
+        if (Test-Path $target) {
+            Remove-Item -Recurse -Force -Path $target
+        }
+        Copy-Item -Recurse -Force -Path $skillSource.FullName -Destination $target
+        Write-Host "Installed $($skillSource.Name) skill for $($entry.Name) to $target"
     }
-    Copy-Item -Recurse -Force -Path $source -Destination $target
-    Write-Host "Installed ayo skill for $($entry.Name) to $target"
 }
 
 $claudeCommandsRoot = Join-Path $env:USERPROFILE ".claude\commands"
@@ -36,10 +38,7 @@ Write-Host ""
 Write-Host "Next steps:"
 Write-Host "1. Fully restart Codex or Claude Code, or open a brand-new chat after installation."
 Write-Host "2. Open the project you want to summarize."
-Write-Host "3. Type exactly: ayo"
-Write-Host "4. To resume from the latest handoff later, type: oya"
-Write-Host "5. To create a project checkpoint, type: ayo bro"
-Write-Host "6. To restore the latest checkpoint, type: fuck"
+Write-Host "3. Type exactly: ayo, oya, ayo bro, or fuck"
 Write-Host "   In Claude Code, you can also type: /ayo, /oya, /ayo-bro, or /fuck"
 Write-Host ""
 Write-Host "Note: ordinary ChatGPT web/app chats do not load local skills from this folder."
