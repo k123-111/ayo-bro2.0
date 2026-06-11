@@ -1,4 +1,4 @@
 interface:
   display_name: "Ayo Handoff"
-  short_description: "Create Markdown project handoffs from chat."
+  short_description: "Handoffs, resumes, checkpoints, restores."
   default_prompt: "ayo"
