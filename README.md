@@ -82,6 +82,20 @@ Install globally so Codex can discover it:
 .\scripts\install.ps1
 ```
 
+On Windows, run `install.ps1` from PowerShell. If you are using Command Prompt (`cmd.exe`), run:
+
+```cmd
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
+```
+
+Do not double-click `install.ps1` or choose "Open" from the Windows security dialog. That may open the script as a text file instead of running it.
+
+If PowerShell blocks the script, run this first in the same PowerShell window:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
 Or copy it manually:
 
 ```powershell
