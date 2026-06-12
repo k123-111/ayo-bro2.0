@@ -1,4 +1,32 @@
-﻿# ayo4.0.0
+﻿# ayo-bro2.0
+
+## Fix Notice: Checkpoint Restore Persistence
+
+A critical checkpoint restore issue has been fixed.
+
+Previously, `.ayo/checkpoints.json` could disappear after running `fuck` because the file was committed into Git and then removed by `git reset --hard` when restoring an older checkpoint.
+
+The checkpoint system now treats `.ayo/checkpoints.json` as local AYO metadata instead of tracked project code.
+
+Updated behavior:
+
+- `ayo bro` stores project code in Git.
+- `ayo bro` stores project memory in `.ayo/memory.md`.
+- `ayo bro` stores the latest checkpoint index in `.ayo/checkpoints.json`.
+- `.ayo/checkpoints.json` is excluded from Git tracking through `.git/info/exclude`.
+- If `.ayo/checkpoints.json` was already tracked, it should be removed from the Git index without deleting the local file.
+- `ayo bro` creates or updates the Git tag `ayo-checkpoint`.
+- `fuck` restores from the `ayo-checkpoint` tag when available.
+- `.ayo/checkpoints.json` remains available after restore, so future restores still work.
+
+In short:
+
+```text
+Git stores the code.
+AYO stores the memory.
+ayo-checkpoint points to the latest safe code state.
+.ayo/checkpoints.json stays local so rollback does not delete the save index.
+```
 
 `ayo` is a chat-triggered AI skill for saving handoffs, resuming work, creating checkpoints, and restoring safe project states.
 
