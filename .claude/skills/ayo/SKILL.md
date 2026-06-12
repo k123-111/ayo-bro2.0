@@ -99,16 +99,33 @@ git config user.email "ayo@example.local"
    - Current problems.
    - Next plan.
    - Notes for a future AI.
-7. Treat `.ayo/checkpoints.json` as a single-slot save file. If it already exists, read it only to know the previous checkpoint, then overwrite it with the new checkpoint record after the checkpoint commit is created.
-8. Stage all project files, including `.ayo/memory.md` and `.ayo/checkpoints.json`.
-9. Create a checkpoint commit with message:
+7. Treat `.ayo/checkpoints.json` as an untracked single-slot save file. Ensure `.ayo/checkpoints.json` is ignored by Git by adding this line to `.git/info/exclude` if it is not already present:
+
+```text
+.ayo/checkpoints.json
+```
+
+8. If `.ayo/checkpoints.json` is already tracked, remove it from the Git index without deleting the working file:
+
+```text
+git rm --cached .ayo/checkpoints.json
+```
+
+9. Stage all project files except `.ayo/checkpoints.json`. Include `.ayo/memory.md`.
+10. Create a checkpoint commit with message. If there are no staged changes, create an empty checkpoint commit with `git commit --allow-empty` so every `ayo bro` produces a restorable save point:
 
 ```text
 AYO_CHECKPOINT_YYYYMMDD_HHMM
 ```
 
-10. Get the checkpoint commit hash with `git rev-parse HEAD`.
-11. Overwrite `.ayo/checkpoints.json` with a JSON array containing only the latest checkpoint entry:
+11. Get the checkpoint commit hash with `git rev-parse HEAD`.
+12. Move or create the checkpoint tag so it points at this commit:
+
+```text
+git tag -f ayo-checkpoint <commit>
+```
+
+13. Overwrite `.ayo/checkpoints.json` with a JSON array containing only the latest checkpoint entry:
 
 ```json
 [
@@ -123,15 +140,8 @@ AYO_CHECKPOINT_YYYYMMDD_HHMM
 
 Use `checkpoint_latest` as the id. Create a concise summary from the current project state and recent changes.
 
-12. Commit the updated checkpoint index with message:
-
-```text
-AYO_CHECKPOINT_INDEX_YYYYMMDD_HHMM
-```
-
-This second commit keeps the checkpoint index current while the recorded `commit` points to the safe project-state commit. Older Git commits may remain in Git history, but AYO no longer references them.
-
-13. Reply with the checkpoint id, commit hash, time, and summary.
+14. Do not commit `.ayo/checkpoints.json`. It is local AYO metadata and must survive `git reset --hard`.
+15. Reply with the checkpoint id, commit hash, time, and summary.
 
 If there are no file changes to commit, still refresh `.ayo/memory.md` and `.ayo/checkpoints.json` so the checkpoint records current project memory. The previous AYO checkpoint record should still be replaced.
 
@@ -159,8 +169,9 @@ After confirmation:
 1. Verify the project is a Git repository.
 2. Read `.ayo/checkpoints.json`.
 3. Select the only checkpoint entry in the array. If an older multi-entry index is found, use the last entry as a backward-compatible fallback.
-4. Verify the checkpoint commit exists with `git cat-file -e <commit>^{commit}`.
-5. Before resetting, preserve any current uncommitted work with:
+4. Prefer the `ayo-checkpoint` tag as the restore target when it exists. Otherwise use the commit recorded in `.ayo/checkpoints.json`.
+5. Verify the restore target exists with `git cat-file -e <target>^{commit}`.
+6. Before resetting, preserve any current uncommitted work with:
 
 ```text
 git stash push -u -m AYO_BACKUP_BEFORE_RESTORE_YYYYMMDD_HHMM
@@ -168,20 +179,20 @@ git stash push -u -m AYO_BACKUP_BEFORE_RESTORE_YYYYMMDD_HHMM
 
 If there is nothing to stash, continue.
 
-6. Restore the project with:
+7. Restore the project with:
 
 ```text
-git reset --hard <commit>
+git reset --hard <target>
 ```
 
-7. Reply with:
+8. Reply with:
    - Restored checkpoint id.
    - Checkpoint time.
    - Checkpoint summary.
    - The restored commit hash.
    - Whether a pre-restore stash backup was created.
 
-If `.ayo/checkpoints.json` is missing, empty, invalid JSON, or points to a missing commit, explain the problem and do not reset.
+If `.ayo/checkpoints.json` is missing, empty, invalid JSON, or the restore target is missing, explain the problem and do not reset.
 
 ## Output Requirements
 

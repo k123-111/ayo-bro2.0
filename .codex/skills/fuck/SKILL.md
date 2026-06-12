@@ -32,13 +32,14 @@ Restore this checkpoint now?
 ```
 
 7. Do not run `git reset --hard` until the user clearly confirms.
-8. After confirmation, verify the checkpoint commit exists:
+8. After confirmation, prefer the `ayo-checkpoint` tag as the restore target when it exists. Otherwise use the commit recorded in `.ayo/checkpoints.json`.
+9. Verify the restore target exists:
 
 ```text
-git cat-file -e <commit>^{commit}
+git cat-file -e <target>^{commit}
 ```
 
-9. Preserve current uncommitted work when needed:
+10. Preserve current uncommitted work when needed:
 
 ```text
 git stash push -u -m AYO_BACKUP_BEFORE_RESTORE_YYYYMMDD_HHMM
@@ -46,18 +47,17 @@ git stash push -u -m AYO_BACKUP_BEFORE_RESTORE_YYYYMMDD_HHMM
 
 If there is nothing to stash, continue.
 
-10. Restore the project:
+11. Restore the project:
 
 ```text
-git reset --hard <commit>
+git reset --hard <target>
 ```
 
-11. Reply with:
+12. Reply with:
    - Restored checkpoint id.
    - Checkpoint time.
    - Checkpoint summary.
    - Restored commit hash.
    - Whether a pre-restore stash backup was created.
 
-If `.ayo/checkpoints.json` is missing, empty, invalid JSON, or points to a missing commit, explain the problem and do not reset.
-
+If `.ayo/checkpoints.json` is missing, empty, invalid JSON, or the restore target is missing, explain the problem and do not reset.

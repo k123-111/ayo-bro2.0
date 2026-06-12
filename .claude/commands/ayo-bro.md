@@ -16,12 +16,15 @@ Follow the same behavior as the `ayo bro` command in the `ayo` skill:
    - Current problems.
    - Next plan.
    - Notes for a future AI.
-5. Create or update `.ayo/checkpoints.json` as a single-slot save file. Each new `ayo bro` replaces the previous AYO checkpoint record.
-6. Run `git add .`.
-7. Commit a safe project-state checkpoint with message `AYO_CHECKPOINT_YYYYMMDD_HHMM`.
-8. Read the checkpoint commit hash with `git rev-parse HEAD`.
-9. Overwrite `.ayo/checkpoints.json` with one array entry using id `checkpoint_latest`, plus the checkpoint commit hash, time, and summary.
-10. Commit the updated index with message `AYO_CHECKPOINT_INDEX_YYYYMMDD_HHMM`.
-11. Reply with checkpoint id, commit hash, time, and summary.
+5. Create or update `.ayo/checkpoints.json` as an untracked single-slot save file. Each new `ayo bro` replaces the previous AYO checkpoint record.
+6. Add `.ayo/checkpoints.json` to `.git/info/exclude` if it is not already present.
+7. If `.ayo/checkpoints.json` is tracked, run `git rm --cached .ayo/checkpoints.json` without deleting the working file.
+8. Stage project files except `.ayo/checkpoints.json`, including `.ayo/memory.md`.
+9. Commit a safe project-state checkpoint with message `AYO_CHECKPOINT_YYYYMMDD_HHMM`. If there are no staged changes, use `git commit --allow-empty` so every `/ayo-bro` produces a restorable save point.
+10. Read the checkpoint commit hash with `git rev-parse HEAD`.
+11. Move or create the tag with `git tag -f ayo-checkpoint <commit>`.
+12. Overwrite `.ayo/checkpoints.json` with one array entry using id `checkpoint_latest`, plus the checkpoint commit hash, time, and summary.
+13. Do not commit `.ayo/checkpoints.json`.
+14. Reply with checkpoint id, commit hash, time, and summary.
 
-Git stores the code. AYO stores the memory. Older Git commits may remain in Git history, but AYO should only reference the latest checkpoint.
+Git stores the code. AYO stores the memory. Older Git commits may remain in Git history, but AYO should only reference the latest checkpoint through `.ayo/checkpoints.json` and the `ayo-checkpoint` tag.

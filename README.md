@@ -181,8 +181,9 @@ The AI should:
 
 - Initialize Git automatically if the project does not already use Git.
 - Create or update `.ayo/memory.md`.
-- Create or update `.ayo/checkpoints.json`.
+- Create or update `.ayo/checkpoints.json` as untracked local AYO metadata.
 - Commit a safe project-state checkpoint with a message like `AYO_CHECKPOINT_20260611_2105`.
+- Move the `ayo-checkpoint` Git tag to the checkpoint commit.
 - Record the checkpoint id, commit hash, time, and summary.
 - Replace the previous AYO checkpoint record so `fuck` restores only the newest save point.
 
@@ -198,9 +199,9 @@ In Claude Code, you can also type:
 /fuck
 ```
 
-The AI should read `.ayo/checkpoints.json`, show the latest checkpoint, ask for confirmation, then restore the project to that Git commit only after the user confirms. Before restoring, it should preserve current uncommitted work with a Git stash backup when needed.
+The AI should read `.ayo/checkpoints.json`, show the latest checkpoint, ask for confirmation, then restore the project to the `ayo-checkpoint` Git tag or recorded commit only after the user confirms. Before restoring, it should preserve current uncommitted work with a Git stash backup when needed.
 
-Note: older Git commits may still exist in Git history, but AYO only keeps and restores the latest checkpoint recorded in `.ayo/checkpoints.json`.
+Note: `.ayo/checkpoints.json` is intentionally not committed. It stays in the working tree so `git reset --hard` does not delete the checkpoint index. Older Git commits may still exist in Git history, but AYO only keeps and restores the latest checkpoint recorded in `.ayo/checkpoints.json` and tagged by `ayo-checkpoint`.
 
 ## Important: Restart After Installing
 

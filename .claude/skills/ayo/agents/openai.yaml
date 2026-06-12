@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 interface:
   display_name: "Ayo Handoff"
   short_description: "Handoffs, resumes, checkpoints, restores."
   default_prompt: "ayo"
-=======
-interface:
-  display_name: "Ayo Handoff"
-  short_description: "Handoffs, resumes, checkpoints, restores."
-  default_prompt: "ayo"
->>>>>>> 5eb8607b1ce449e3c84a235a056cc3af3d60320d

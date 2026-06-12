@@ -11,9 +11,10 @@ Follow the same behavior as the `fuck` command in the `ayo` skill:
 After confirmation:
 
 1. Verify the project is a Git repository.
-2. Verify the checkpoint commit exists.
-3. Preserve current uncommitted work with `git stash push -u -m AYO_BACKUP_BEFORE_RESTORE_YYYYMMDD_HHMM` when needed.
-4. Restore with `git reset --hard <commit>`.
-5. Reply with the restored checkpoint details and whether a stash backup was created.
+2. Prefer the `ayo-checkpoint` tag as the restore target when it exists. Otherwise use the commit recorded in `.ayo/checkpoints.json`.
+3. Verify the restore target exists.
+4. Preserve current uncommitted work with `git stash push -u -m AYO_BACKUP_BEFORE_RESTORE_YYYYMMDD_HHMM` when needed.
+5. Restore with `git reset --hard <target>`.
+6. Reply with the restored checkpoint details and whether a stash backup was created.
 
-If `.ayo/checkpoints.json` is missing, empty, invalid, or points to a missing commit, explain the problem and do not reset.
+If `.ayo/checkpoints.json` is missing, empty, invalid, or the restore target is missing, explain the problem and do not reset.
